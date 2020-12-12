@@ -5,6 +5,10 @@ services:
     environment:
       BOT_ID: $BOT_ID
       INSTANCE_ID: $INSTANCE_ID
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      AWS_DEFAULT_REGION: ap-northeast-1
+      AWS_DEFAULT_OUTPUT: json
     volumes:
       - ./:/go/src/tetona
     working_dir: /go/src/tetona
