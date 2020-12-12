@@ -2,6 +2,8 @@ version: "3"
 services:
   bot:
     image: golang:1.15.6-buster
+    environment:
+      BOT_ID: $BOT_ID
     volumes:
       - ./:/go/src/tetona
     working_dir: /go/src/tetona
