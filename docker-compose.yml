@@ -1,0 +1,10 @@
+version: "3"
+services:
+  bot:
+    image: golang:1.15.6-buster
+    volumes:
+      - ./:/go/src/tetona
+    working_dir: /go/src/tetona
+    ports:
+      - 8080:8080
+    command: "go run main.go"
