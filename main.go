@@ -33,39 +33,36 @@ type InstanceStatus struct {
 	} `json:"PreviousState"`
 }
 
-func receive(s *discordgo.Session, event *discordgo.MessageCreate) error {
+func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 	messages, err := config.GetConfig()
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 
 	if event.Content == messages.StartTriggerMessage {
 		log.Println("Start Instance")
 		outputJSON, err := exec.Command("aws", "ec2", "start-instances", "--instance-ids", os.Getenv("INSTANCE_ID")).Output()
 		if err != nil {
-			return err
+			log.Fatalln(err)
 		}
 
 		startResponse := StartResponse{}
 		if err := json.Unmarshal(outputJSON, &startResponse); err != nil {
-			return err
+			log.Fatalln(err)
 		}
 
 	} else if event.Content == messages.HibernateTriggerMessage {
 		log.Println("Hibernate Instance")
 		outputJSON, err := exec.Command("aws", "ec2", "stop-instances", "--instance-ids", os.Getenv("INSTANCE_ID")).Output()
 		if err != nil {
-			return err
+			log.Fatalln(err)
 		}
 
 		stopResponse := StopResponse{}
 		if err := json.Unmarshal(outputJSON, &stopResponse); err != nil {
-			return err
+			log.Fatalln(err)
 		}
-
 	}
-
-	return nil
 }
 
 func runDiscordBot() error {
