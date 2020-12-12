@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"tetona/config"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -23,7 +25,12 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer session.Close()
+	log.Println("Start Bot")
+
+	// defer func(session *discordgo.Session) {
+	// 	session.Close()
+	// 	log.Println("Stop Bot")
+	// }(session)
 
 	<-stopBot
 
@@ -31,5 +38,19 @@ func main() {
 }
 
 func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
+	messages, err := config.GetConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	if event.Content == messages.StartTriggerMessage {
+		log.Println("Start Instance")
+		return
+
+	} else if event.Content == messages.HibernateTriggerMessage {
+		log.Println("Hibernate Instance")
+		return
+
+	}
 	fmt.Println(event.Content)
 }
