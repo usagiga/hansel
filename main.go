@@ -24,15 +24,11 @@ func main() {
 
 	session.AddHandler(receive)
 	err = session.Open()
-	if err != nil {
-		fmt.Println(err)
-	}
-	log.Println("Start Bot")
 
-	// defer func(session *discordgo.Session) {
-	// 	session.Close()
-	// 	log.Println("Stop Bot")
-	// }(session)
+	if err != nil {
+		log.Fatalln("Failed : Start Bot")
+	}
+	log.Println("Succeeded : Start Bot")
 
 	<-stopBot
 
