@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -10,30 +9,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 )
-
-var (
-	stopBot = make(chan bool)
-)
-
-func main() {
-	session, err := discordgo.New()
-	if err != nil {
-		panic(err)
-	}
-	session.Token = "Bot " + os.Getenv("BOT_ID")
-
-	session.AddHandler(receive)
-	err = session.Open()
-
-	if err != nil {
-		log.Fatalln("Failed : Start Bot")
-	}
-	log.Println("Succeeded : Start Bot")
-
-	<-stopBot
-
-	return
-}
 
 // StartResponse EC2起動指示時のレスポンス
 type StartResponse struct {
@@ -58,38 +33,69 @@ type InstanceStatus struct {
 	} `json:"PreviousState"`
 }
 
-func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
+func receive(s *discordgo.Session, event *discordgo.MessageCreate) error {
 	messages, err := config.GetConfig()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if event.Content == messages.StartTriggerMessage {
 		log.Println("Start Instance")
 		outputJSON, err := exec.Command("aws", "ec2", "start-instances", "--instance-ids", os.Getenv("INSTANCE_ID")).Output()
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		startResponse := StartResponse{}
 		if err := json.Unmarshal(outputJSON, &startResponse); err != nil {
-			panic(err)
+			return err
 		}
-		return
 
 	} else if event.Content == messages.HibernateTriggerMessage {
 		log.Println("Hibernate Instance")
 		outputJSON, err := exec.Command("aws", "ec2", "stop-instances", "--instance-ids", os.Getenv("INSTANCE_ID")).Output()
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		stopResponse := StopResponse{}
 		if err := json.Unmarshal(outputJSON, &stopResponse); err != nil {
-			panic(err)
+			return err
 		}
-		return
 
 	}
-	fmt.Println(event.Content)
+
+	return nil
+}
+
+func runDiscordBot() error {
+	session, err := discordgo.New()
+	if err != nil {
+		return err
+	}
+
+	session.Token = "Bot " + os.Getenv("BOT_ID")
+
+	session.AddHandler(receive)
+	err = session.Open()
+
+	if err != nil {
+		log.Println("Failed : Start Bot")
+		return err
+	}
+	log.Println("Succeeded : Start Bot")
+
+	return nil
+}
+
+var stopBot = make(chan bool)
+
+func main() {
+	err := runDiscordBot()
+	if err != nil {
+		panic(err)
+	}
+
+	<-stopBot
+	return
 }
