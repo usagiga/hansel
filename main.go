@@ -35,14 +35,17 @@ func main() {
 	return
 }
 
+// StartResponse EC2起動指示時のレスポンス
 type StartResponse struct {
 	StartingInstances []InstanceStatus `json:"StartingInstances"`
 }
 
+// StopResponse EC2停止指示時のレスポンス
 type StopResponse struct {
 	StoppingInstances []InstanceStatus `json:"StoppingInstances"`
 }
 
+// InstanceStatus EC2指示時の共通レスポンス
 type InstanceStatus struct {
 	InstanceID   string `json:"InstanceId"`
 	CurrentState struct {
