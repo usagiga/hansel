@@ -19,5 +19,3 @@ go get -v\
   golang.org/x/tools/cmd/goimports  \
   golang.org/x/lint/golint  \
   golang.org/x/tools/gopls  
-
-go mod tidy
