@@ -70,7 +70,7 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 			log.Println("起動待ちに失敗した :", err)
 			return
 		}
-		log.Println("正常停止 : インスタンス起動")
+		log.Println("正常終了 : インスタンス起動")
 
 	} else if event.Content == messages.HibernateTriggerMessage {
 		// 停止時
@@ -104,7 +104,7 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 			log.Println("停止待ちに失敗した :", err)
 			return
 		}
-		log.Println("正常停止 : インスタンス停止")
+		log.Println("正常終了 : インスタンス停止")
 	}
 }
 
