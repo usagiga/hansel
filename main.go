@@ -33,6 +33,28 @@ type InstanceStatus struct {
 	} `json:"PreviousState"`
 }
 
+// TargetChannel Botがメッセージを投稿するDiscordチャンネル
+type TargetChannel struct {
+	s     *discordgo.Session
+	event *discordgo.MessageCreate
+}
+
+func (tc *TargetChannel) messageSend(message string) error {
+	// コマンドが投稿されたチャンネル
+	targetChannel, err := tc.s.State.Channel(tc.event.ChannelID)
+	if err != nil {
+		log.Println("チャンネルの取得に失敗 :", err)
+		return err
+	}
+
+	// Botからメッセージ投稿
+	if _, err := tc.s.ChannelMessageSend(targetChannel.ID, message); err != nil {
+		log.Println("チャンネルメッセージの送信に失敗 :", err)
+		return err
+	}
+	return nil
+}
+
 func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 	messages, err := config.GetConfig()
 	if err != nil {
