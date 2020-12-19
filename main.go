@@ -189,6 +189,24 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 
 		log.Println("正常終了 : インスタンス停止")
 		targetChannel.messageSend("インスタンスの停止に成功")
+
+	} else if event.Content == messages.GetStatusMessage {
+		// 起動状態の確認(IPアドレスの取得)
+		log.Println("開始 : インスタンスステータス確認")
+		targetChannel.messageSend("インスタンスの確認コマンドを検知")
+
+		ipaddress, err := getIPAddress()
+		if err != nil {
+			targetChannel.messageSend("インスタンスの確認に失敗")
+			return
+		}
+
+		if ipaddress != "" {
+			targetChannel.messageSend("インスタンスは起動済み :" + ipaddress)
+		} else {
+			targetChannel.messageSend("インスタンスは未起動")
+		}
+
 	}
 }
 
