@@ -76,7 +76,9 @@ func getIPAddress() (string, error) {
 	}
 
 	ipaddress := ssResponse[0].Publicip
-	log.Println("IPアドレス : ", ipaddress)
+	if ipaddress != "" {
+		log.Println("IPアドレス : ", ipaddress)
+	}
 
 	return ipaddress, nil
 }
