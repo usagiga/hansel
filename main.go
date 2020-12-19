@@ -10,6 +10,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// ServerStatusRespose EC2起動後のステータス確認レスポンス
+type ServerStatusRespose struct {
+	Publicip string `json:"publicip"`
+}
+
 // StartResponse EC2起動指示時のレスポンス
 type StartResponse struct {
 	StartingInstances []InstanceStatus `json:"StartingInstances"`
