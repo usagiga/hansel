@@ -61,6 +61,26 @@ func (tc *TargetChannel) messageSend(message string) error {
 	return nil
 }
 
+// getIPAddress インスタンスのIPアドレス取得
+func getIPAddress() (string, error) {
+	statusOutputJSON, err := exec.Command("aws", "ec2", "describe-instances", "--instance-ids", os.Getenv("INSTANCE_ID"), "--query", "Reservations[].Instances[].{publicip:PublicIpAddress}").Output()
+	if err != nil {
+		log.Println("IPアドレス取得時、コマンド実行に失敗 : ", err)
+		return "", err
+	}
+
+	ssResponse := []ServerStatusRespose{}
+	if err := json.Unmarshal(statusOutputJSON, &ssResponse); err != nil {
+		log.Println("IPアドレス取得時のレスポンスに異常 :", err)
+		return "", err
+	}
+
+	ipaddress := ssResponse[0].Publicip
+	log.Println("IPアドレス : ", ipaddress)
+
+	return ipaddress, nil
+}
+
 func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 	targetChannel := TargetChannel{
 		s:     s,
@@ -119,22 +139,13 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 		targetChannel.messageSend("約1分後、IPアドレス通知予定")
 		time.Sleep(time.Minute)
 
-		statusOutputJSON, err := exec.Command("aws", "ec2", "describe-instances", "--instance-ids", os.Getenv("INSTANCE_ID"), "--query", "Reservations[].Instances[].{publicip:PublicIpAddress}").Output()
+		ipaddress, err := getIPAddress()
 		if err != nil {
-			log.Println("IPアドレス取得時、コマンド実行に失敗 : ", err)
 			targetChannel.messageSend("IPアドレスの取得に失敗")
 			return
 		}
 
-		ssResponse := []ServerStatusRespose{}
-		if err := json.Unmarshal(statusOutputJSON, &ssResponse); err != nil {
-			log.Println("IPアドレス取得時のレスポンスに異常 :", err)
-			targetChannel.messageSend("IPアドレスの取得に失敗")
-			return
-		}
-
-		log.Println("IPアドレス : ", ssResponse[0].Publicip)
-		targetChannel.messageSend("今回のIPアドレス : " + ssResponse[0].Publicip)
+		targetChannel.messageSend("今回のIPアドレス : " + ipaddress)
 
 	} else if event.Content == messages.HibernateTriggerMessage {
 		// 停止時
