@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"tetona/config"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -113,6 +114,28 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 		log.Println("正常終了 : インスタンス起動")
 		targetChannel.messageSend("インスタンスの起動に成功")
 
+		// IPアドレス通知
+		log.Println("IPアドレス取得待機中...")
+		targetChannel.messageSend("約1分後、IPアドレス通知予定")
+		time.Sleep(time.Minute)
+
+		statusOutputJSON, err := exec.Command("aws", "ec2", "describe-instances", "--instance-ids", os.Getenv("INSTANCE_ID"), "--query", "Reservations[].Instances[].{publicip:PublicIpAddress}").Output()
+		if err != nil {
+			log.Println("IPアドレス取得時、コマンド実行に失敗 : ", err)
+			targetChannel.messageSend("IPアドレスの取得に失敗")
+			return
+		}
+
+		ssResponse := []ServerStatusRespose{}
+		if err := json.Unmarshal(statusOutputJSON, &ssResponse); err != nil {
+			log.Println("IPアドレス取得時のレスポンスに異常 :", err)
+			targetChannel.messageSend("IPアドレスの取得に失敗")
+			return
+		}
+
+		log.Println("IPアドレス : ", ssResponse[0].Publicip)
+		targetChannel.messageSend("今回のIPアドレス : " + ssResponse[0].Publicip)
+
 	} else if event.Content == messages.HibernateTriggerMessage {
 		// 停止時
 		log.Println("開始 : インスタンス停止...")
@@ -152,7 +175,7 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 			targetChannel.messageSend("インスタンスの停止状態不明　再度のコマンド入力を要求")
 			return
 		}
-		
+
 		log.Println("正常終了 : インスタンス停止")
 		targetChannel.messageSend("インスタンスの停止に成功")
 	}
