@@ -138,8 +138,7 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 
 		// IPアドレス通知
 		log.Println("IPアドレス取得待機中...")
-		targetChannel.messageSend("約1分後、IPアドレス通知予定")
-		time.Sleep(time.Minute)
+		time.Sleep(time.Second)
 
 		ipaddress, err := getIPAddress()
 		if err != nil {
