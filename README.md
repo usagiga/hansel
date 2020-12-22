@@ -1,4 +1,6 @@
 # tetona
+「画像も貼らずにスレ立てとな!?」 *ー[ガゾーモ・ハラズニ・スレタ＝**テトナ**](https://twitter.com/2chijin/status/552787150127656961)　(１７０１～１９９６)ー*
+
 ## 概要
 * DiscordからMinecraftゲームサーバ(EC2)を操作するDiscordBot
 * Minecraftゲームサーバ: [sureta](https://github.com/shokkunrf/sureta)
