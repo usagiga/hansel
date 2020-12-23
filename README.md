@@ -17,10 +17,10 @@
 * EC2インスタンスの作成
 * DiscordBotの作成
 
-### pull
+### clone
 ```sh
-$ git pull https://github.com/shokkunrf/tetona.git
-$ cd tetona
+git clone https://github.com/shokkunrf/hansel.git
+cd hansel
 ```
 
 ### .envの作成
@@ -35,5 +35,5 @@ AWS_DEFAULT_OUTPUT=json
 
 ### 実行
 ```sh
-$ docker-compose up --build
+docker-compose up --build -d
 ```
