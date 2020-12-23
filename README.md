@@ -2,7 +2,7 @@
 
 ## 概要
 * DiscordからMinecraftゲームサーバ(EC2)を操作するDiscordBot
-* Minecraftゲームサーバ: [sureta](https://github.com/shokkunrf/sureta)
+* Minecraftゲームサーバ: [gretel](https://github.com/shokkunrf/gretel)
 
 ## 機能
 * EC2の起動(トリガーメッセージ: start)
