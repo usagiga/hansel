@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"hansel/config"
 	"log"
 	"os"
 	"os/exec"
-	"tetona/config"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
