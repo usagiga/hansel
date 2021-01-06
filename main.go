@@ -11,9 +11,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// ServerStatusRespose EC2起動後のステータス確認レスポンス
-type ServerStatusRespose struct {
-	Publicip string `json:"publicip"`
+// ServerStatusResponse EC2起動後のステータス確認レスポンス
+type ServerStatusResponse struct {
+	PublicIP string `json:"publicip"`
 }
 
 // StartResponse EC2起動指示時のレスポンス
@@ -69,13 +69,13 @@ func getIPAddress() (string, error) {
 		return "", err
 	}
 
-	ssResponse := []ServerStatusRespose{}
+	ssResponse := []ServerStatusResponse{}
 	if err := json.Unmarshal(statusOutputJSON, &ssResponse); err != nil {
 		log.Println("IPアドレス取得時のレスポンスに異常 :", err)
 		return "", err
 	}
 
-	ipaddress := ssResponse[0].Publicip
+	ipaddress := ssResponse[0].PublicIP
 	if ipaddress != "" {
 		log.Println("IPアドレス : ", ipaddress)
 	}
