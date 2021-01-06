@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -231,14 +233,26 @@ func runDiscordBot() error {
 	return nil
 }
 
-var stopBot = make(chan bool)
-
 func main() {
 	err := runDiscordBot()
 	if err != nil {
 		panic(err)
 	}
 
-	<-stopBot
-	return
+	// 終了を待機
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(
+		signalChan,
+		os.Interrupt,
+		os.Kill,
+		syscall.SIGHUP,
+		syscall.SIGQUIT,
+		syscall.SIGTERM,
+	)
+
+	select {
+	case <-signalChan:
+		log.Println("bye")
+		return
+	}
 }
