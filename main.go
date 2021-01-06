@@ -211,17 +211,11 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 	}
 }
 
-func runDiscordBot() error {
-	session, err := discordgo.New()
-	if err != nil {
-		return err
-	}
-
+func runDiscordBot(session *discordgo.Session) error {
 	session.Token = "Bot " + os.Getenv("BOT_ID")
 
 	session.AddHandler(receive)
-	err = session.Open()
-
+	err := session.Open()
 	if err != nil {
 		log.Println("Failed : Start Bot")
 		return err
@@ -234,10 +228,18 @@ func runDiscordBot() error {
 var stopBot = make(chan bool)
 
 func main() {
-	err := runDiscordBot()
+	session, err := discordgo.New()
 	if err != nil {
 		panic(err)
 	}
+
+	err = runDiscordBot(session)
+	if err != nil {
+		panic(err)
+	}
+
+	//goland:noinspection GoUnhandledErrorResult
+	defer session.Close()
 
 	<-stopBot
 	return
