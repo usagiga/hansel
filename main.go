@@ -13,9 +13,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// ServerStatusRespose EC2起動後のステータス確認レスポンス
-type ServerStatusRespose struct {
-	Publicip string `json:"publicip"`
+// ServerStatusResponse EC2起動後のステータス確認レスポンス
+type ServerStatusResponse struct {
+	PublicIP string `json:"publicip"`
 }
 
 // StartResponse EC2起動指示時のレスポンス
@@ -71,13 +71,13 @@ func getIPAddress() (string, error) {
 		return "", err
 	}
 
-	ssResponse := []ServerStatusRespose{}
+	ssResponse := []ServerStatusResponse{}
 	if err := json.Unmarshal(statusOutputJSON, &ssResponse); err != nil {
 		log.Println("IPアドレス取得時のレスポンスに異常 :", err)
 		return "", err
 	}
 
-	ipaddress := ssResponse[0].Publicip
+	ipaddress := ssResponse[0].PublicIP
 	if ipaddress != "" {
 		log.Println("IPアドレス : ", ipaddress)
 	}
@@ -213,17 +213,11 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 	}
 }
 
-func runDiscordBot() error {
-	session, err := discordgo.New()
-	if err != nil {
-		return err
-	}
-
+func runDiscordBot(session *discordgo.Session) error {
 	session.Token = "Bot " + os.Getenv("BOT_ID")
 
 	session.AddHandler(receive)
-	err = session.Open()
-
+	err := session.Open()
 	if err != nil {
 		log.Println("Failed : Start Bot")
 		return err
@@ -234,10 +228,18 @@ func runDiscordBot() error {
 }
 
 func main() {
-	err := runDiscordBot()
+	session, err := discordgo.New()
 	if err != nil {
 		panic(err)
 	}
+
+	err = runDiscordBot(session)
+	if err != nil {
+		panic(err)
+	}
+
+	//goland:noinspection GoUnhandledErrorResult
+	defer session.Close()
 
 	// 終了を待機
 	signalChan := make(chan os.Signal, 1)
