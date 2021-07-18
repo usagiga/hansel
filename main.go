@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"hansel/config"
+	"hansel/entity"
 	"log"
 	"os"
 	"os/exec"
@@ -83,6 +85,16 @@ func getIPAddress() (string, error) {
 	}
 
 	return ipaddress, nil
+}
+
+func updateBotPresence(s *discordgo.Session, guildId string, status entity.ServerStatus) (err error) {
+	pres := status.GetPresence()
+	err = s.State.PresenceAdd(guildId, pres)
+	if err != nil {
+		return fmt.Errorf("updateBotPresence(): failed to update presence")
+	}
+
+	return nil
 }
 
 func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
