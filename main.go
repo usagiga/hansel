@@ -149,6 +149,7 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 
 		log.Println("正常終了 : インスタンス起動")
 		targetChannel.messageSend("インスタンスの起動に成功")
+		updateBotPresence(s, event.GuildID, entity.Wake)
 
 		// IPアドレス通知
 		log.Println("IPアドレス取得待機中...")
@@ -204,6 +205,7 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 
 		log.Println("正常終了 : インスタンス停止")
 		targetChannel.messageSend("インスタンスの停止に成功")
+		updateBotPresence(s, event.GuildID, entity.Sleep)
 
 	} else if event.Content == messages.GetStatusTriggerMessage {
 		// 起動状態の確認(IPアドレスの取得)
@@ -218,8 +220,10 @@ func receive(s *discordgo.Session, event *discordgo.MessageCreate) {
 
 		if ipaddress != "" {
 			targetChannel.messageSend("インスタンスは起動済み :" + ipaddress)
+			updateBotPresence(s, event.GuildID, entity.Wake)
 		} else {
 			targetChannel.messageSend("インスタンスは未起動")
+			updateBotPresence(s, event.GuildID, entity.Sleep)
 		}
 
 	}
